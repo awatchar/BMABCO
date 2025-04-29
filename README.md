@@ -1,53 +1,56 @@
-# Environmental Impact Data-Logger – Node-RED Flows  
-*A reference implementation for real-time environmental monitoring and automatic data submission to the **Bangkok Metropolitan Administration – Building Control Office (BMA BCO)** platform.*
+```markdown
+# Environmental Impact Data-Logger · Node-RED Flows
 
-<p align="center">
-  <img src="docs/architecture.svg" width="620" alt="System-Level Overview"/>
-</p>
+Minimal Node-RED flows for polling construction-site sensors over **RS-485 / Modbus RTU**, converting the data to the **BMA E-Permit JSON schema**, and posting each payload to the **Bangkok Metropolitan Administration – Building Control Office (BCO)** API via **HTTPS + JWT**.
 
 ---
 
-## Table of Contents
-1. [Overview](#1-overview)  
-2. [Architecture](#2-architecture)  
-3. [Repository Structure](#3-repository-structure)  
-4. [Prerequisites](#4-prerequisites)  
-5. [Quick Start](#5-quick-start)  
-6. [Configuration](#6-configuration)  
-7. [Security Considerations](#7-security-considerations)  
-8. [Development & Contribution](#8-development--contribution)  
-9. [License](#9-license)  
-10. [References](#10-references)  
+## Quick Start
+
+```bash
+git clone https://github.com/<your-org>/eid-nodered.git
+cd eid-nodered
+cp config/env.sample .env      # edit BCO_URL, JWT creds, serial port …
+docker compose up -d           # Node-RED, Modbus agent, JWT manager
+```
+
+Open **`http://<edgebox-ip>:1880`** for the Node-RED editor  
+(default `admin / changeme` — change immediately).
 
 ---
 
-## 1. Overview
-This repository hosts the complete **Node-RED** source code and helper services that power the *Environmental Impact Data-Logger* prototype.  
-The system **polls multi-sensor nodes via RS-485 / Modbus RTU**, validates and normalises measurements, converts them to the official **BMA E-Permit JSON schema**, and pushes the payload to the **BCO API Gateway** over an **HTTPS + JWT** secured channel.
+## Essential Configuration (`.env`)
 
-| Design Goal | Rationale |
-|-------------|-----------|
-| **Standards-Based I/O** | Modbus RTU ensures vendor neutrality and future sensor expansion. |
-| **Edge Validation** | Guarantee schema compliance before uplink; reduce bandwidth. |
-| **Secure, Resilient Uplink** | TLS 1.3, short-lived JWT, automatic retry with exponential back-off. |
-| **Minimal Footprint** | Runs on an EdgeBox RPi 200 with \< 5 % CPU at 10 s polling. |
-| **Drag-and-Drop Extensibility** | Add new sensors or cloud endpoints directly in Node-RED. |
+| Key              | Example                                         |
+|------------------|-------------------------------------------------|
+| `BCO_URL`        | `https://bco.bangkok.go.th/api/v1/environment`  |
+| `JWT_CLIENT_ID`  | `eid-logger-01`                                 |
+| `MODBUS_PORT`    | `/dev/ttyS0`                                    |
+| `MODBUS_BAUD`    | `9600`                                          |
+| `DEVICE_ID`      | `BMA-EID-001`                                   |
+
+Modbus registers ↔ JSON fields live in **`config/modbus-map.yaml`** (hot-reload).
 
 ---
 
-## 2. Architecture
-```mermaid
-graph LR
-  subgraph Sensor_Layer
-    A(Weather Station<br/>(Wind · Temp · RH · PM · Noise))
-    B(Vibration Sensor<br/>(3-axis))
-  end
-  subgraph Edge_Layer
-    C[EdgeBox RPi 200<br/>Modbus Agent · JSON Mapper · Watch-dog · LTE Link]
-  end
-  subgraph Cloud_Layer
-    D[BMA BCO<br/>API Gateway<br/>(E-Permit Dashboard)]
-  end
-  A -- RS-485&nbsp;/&nbsp;Modbus --> C
-  B -- RS-485&nbsp;/&nbsp;Modbus --> C
-  C -- LTE&nbsp;/&nbsp;HTTPS&nbsp;+&nbsp;JWT --> D
+## Requirements
+
+* Edge device: EdgeBox RPi 200 (or any ARM64+Docker host)  
+* Software: Docker & Compose, Node-RED ≥ 3.1 (pre-built image)  
+* Bus: Shielded RS-485, 120 Ω termination, 9600-115200 bps  
+* Network: LTE Cat 4 (or wired) with outbound HTTPS to BCO
+
+---
+
+## Security Notes
+
+* TLS 1.3 with certificate pinning  
+* JWT auto-refresh every 5 h; data buffered (SQLite) if offline  
+* Watch-dog restarts Node-RED on heartbeat timeout (60 s)
+
+---
+
+## License
+
+[MIT](LICENSE) – free to use, modify, and distribute.
+```
