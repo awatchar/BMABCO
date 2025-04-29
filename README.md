@@ -74,38 +74,37 @@ Hardware
 
 ---
 
-## 5. Quick Start  
+Below is an updated **Quick Start** section you can drop straight into the README, replacing the old Docker-based steps.  It focuses only on downloading the flow JSON from this repo and importing it into an existing Node-RED instance.
 
-```bash
-# 1. Clone repository
-git clone https://github.com/your-org/eid-nodered.git && cd eid-nodered
+```markdown
+## 5. Quick Start — Importing the Flow
 
-# 2. Copy and edit environment
-cp config/env.sample .env
-nano .env        # → set BCO_URL, POLL_INTERVAL, JWT_CLIENT_ID …
+1. **Download the flow JSON**  
+   * Grab `flows/main.flow.json` from this repository ( Code ▸ Download ZIP  or the *Raw* button ▸ Save As ).
 
-# 3. Build & launch
-docker compose up -d      # Node-RED, Modbus agent, JWT manager
-```
+2. **Open your Node-RED editor**  
+   * Default URL is `http://<your-node-red-host>:1880`.
 
-Open `http://edgebox-ip:1880` to access the Node-RED editor  
-(default credentials `admin / changeme` – **change immediately**).
+3. **Import the flow**  
+   * Menu ▸ *Import* ▸ *Clipboard* ▸ paste the JSON **or** drag-and-drop the saved file.  
+   * Review the nodes; Node-RED will highlight any missing dependencies.
 
----
+4. **Install required nodes** (once, if they aren’t present)  
+   ```bash
+   # from the Node-RED editor Menu ▸ Manage palette ▸ Install
+   node-red-contrib-modbus
+   node-red-contrib-jwt
+   ```
 
-## 6. Configuration  
+5. **Configure credentials & serial port**  
+   * Double-click the “Environment Config” node and enter  
+     * `BCO_URL`, `JWT_CLIENT_ID`, `JWT_SECRET`  
+     * `MODBUS_PORT` (e.g. `/dev/ttyS0`) and `MODBUS_BAUD` (9600).
 
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `BCO_URL` | HTTPS endpoint for E-Permit ingestion | `https://bco.bangkok.go.th/api/v1/environment` |
-| `JWT_CLIENT_ID / SECRET` | Credentials issued by BCO IT | — |
-| `MODBUS_PORT` | Serial device | `/dev/ttyS0` |
-| `MODBUS_BAUD` | Baud rate | `9600` |
-| `DEVICE_ID` | Unique UID of logger | `BMA-EID-001` |
+6. **Deploy**  
+   * Click **Deploy** – the flow will begin polling sensors and pushing data to BCO.
 
-The **register map** resides in `config/modbus-map.yaml` and supports hot-reload; simply append a new block to add sensors.
-
----
+> **Tip:** keep a serial console or `node-red-log` open to watch for connection errors while you fine-tune the settings.
 
 ## 7. Security Considerations  
 
