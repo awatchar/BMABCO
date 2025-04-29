@@ -41,18 +41,6 @@ Key design goals
 .
 ├── flows/                     # Exported Node-RED flow JSON files
 │   ├── main.flow.json         # Core polling → mapping → uplink
-│   └── dashboard.flow.json    # Local Grafana-style UI
-├── services/
-│   ├── modbus-agent/          # Python3 async Modbus publisher
-│   └── jwt-manager/           # Token refresh script (bash)
-├── docker/
-│   ├── docker-compose.yml     # Edge deployment stack
-│   └── Dockerfile             # Node-RED w/ pre-installed nodes
-├── config/
-│   ├── env.sample             # Environment variables template
-│   └── modbus-map.yaml        # Register → JSON field map
-├── docs/
-│   └── architecture.svg       # High-level diagram (optional)
 └── LICENSE
 ```
 
