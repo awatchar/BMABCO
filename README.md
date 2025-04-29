@@ -140,4 +140,4 @@ Sensor vendor SDKs included in `vendor/` may carry their own licenses.
 * Open Modbus Organization. *Modbus Application Protocol Specification v1.1b3*, 2012.  
 
 > **Questions?**  
-> Open an issue or contact `ict.bco@bangkok.go.th` (subject “EID-Node-RED”).
+> Open an issue or contact `awatchar(at)engr.tu.ac.th` (subject “EID-Node-RED”).
