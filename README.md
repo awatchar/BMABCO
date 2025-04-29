@@ -74,9 +74,6 @@ Hardware
 
 ---
 
-Below is an updated **Quick Start** section you can drop straight into the README, replacing the old Docker-based steps.  It focuses only on downloading the flow JSON from this repo and importing it into an existing Node-RED instance.
-
-```markdown
 ## 5. Quick Start — Importing the Flow
 
 1. **Download the flow JSON**  
